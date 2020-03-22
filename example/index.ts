@@ -5,86 +5,68 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
 (async () => {
     const pp = new SpriteSheetLoader({
-        src: './epic.png',
+        src: './into_anim.png',
         frame: {
-            width: 1148,
-            height: 542
+            width: 1200,
+            height: 900
         },
         sprites: [
-            ['srp_1']
+            ['sr_1', 'sr_2', 'sr_3', 'sr_4'],
+            ['sr1_1', 'sr1_2', 'sr1_3', 'sr1_4'],
+            ['sr2_1', 'sr2_2', 'sr2_3', 'sr2_4'],
+            ['sr3_1', 'sr3_2', 'sr3_3', 'sr3_4'],
+            ['sr4_1', 'sr4_2', 'sr4_3', 'sr4_4'],
+            ['sr5_1', 'sr5_2', 'sr5_3', 'sr5_4'],
+            ['sr6_1', 'sr6_2', 'sr6_3', 'sr6_4']
         ],
-        id: 'sr_1'
+        id: 'spr_1'
     });
-
-    const pp_2 = new SpriteSheetLoader({
-        src: './epic_2.png',
-        frame: {
-            width: 1148,
-            height: 542
-        },
-        sprites: [
-            ['srp_1']
-        ],
-        id: 'sr_2'
-    })
     
-    SpriteStore.getInstance().add(new SpriteRenderer(canvas.getContext('2d'), await pp.load()));
+    const ctx = canvas.getContext('2d');
 
-    SpriteStore.getInstance().add(new SpriteRenderer(canvas.getContext('2d'), await pp_2.load()));
+    SpriteStore.getInstance().add(new SpriteRenderer(ctx, await pp.load()));
 
-    const an = new AnimatedSpriteRenderer(canvas.getContext('2d'), {
+    const an = new AnimatedSpriteRenderer(ctx, {
         loop: AnimationLoopType.linear,
-        fps: 60,
-        frames: 2,
-        keyframes: [{
-            frame: 0,
-            layers: [
-                {
-                    position: {
-                        x: 0,
-                        y: 0,
-                        width: 1148,
-                        height: 542
-                    },
-                    rendererId: 'sr_1',
-                    id: 'srp_1'
-                }
-            ]
-        },
-        {
-            frame: 1,
-            layers: [
-                {
-                    position: {
-                        x: 0,
-                        y: 0,
-                        width: 1148,
-                        height: 542
-                    },
-                    rendererId: 'sr_2',
-                    id: 'srp_1'
-                }
-            ]
-        }],
+        fps: 8,
+        frames: 30,
+        keyframes: pp.sprites.map((sprite, index) => {
+            return {
+                frame: index,
+                layers: [sprite]
+            }
+        }).splice(0, pp.sprites.length - 1),
         id: 'ok_boomer'
     });
     
-    canvas.width = 500;
-    canvas.height = 500;
+    canvas.width = 700;
+    canvas.height = 700;
     
-    const spr = SpriteStore.getInstance().get('sr_1');
+    const spr = SpriteStore.getInstance().get('spr_1');
     
+    let preDelta : number = -1;
     const dr = (delta : number) => {
-        an.draw(delta, {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const yes = an.draw(delta, {
             x: 0,
             y: 0,
-            width: 200,
-            height: 200
+            width: 600,
+            height: 450
         });
-        requestAnimationFrame(dr)
+        
+        ctx.font = '20px sans-serif';
+
+        ctx.fillText((1000/(delta - preDelta)).toFixed(0).toString(), 10, 50)
+        preDelta = delta;
+
+        ctx.font = '15px sans-serif';
+
+        ctx.fillText(JSON.stringify(yes), 10, 20);
+
+        requestAnimationFrame(dr);
     };
 
-    requestAnimationFrame(dr)
+    requestAnimationFrame(dr);
     
     console.log(spr)
 })();

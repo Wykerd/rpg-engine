@@ -1,4 +1,5 @@
 import { DrawPosition } from "./types";
+import { Sprite } from "../sprites";
 
 export abstract class RendererBase {
     public readonly ctx : CanvasRenderingContext2D;
@@ -9,7 +10,7 @@ export abstract class RendererBase {
 }
 
 export abstract class DynamicRenderer extends RendererBase {
-    abstract draw(delta: number, position: DrawPosition) : any;
+    abstract draw(delta: number, position: DrawPosition) : Sprite[];
 }
 
 export abstract class StaticRenderer extends RendererBase {

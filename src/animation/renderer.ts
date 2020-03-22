@@ -1,7 +1,7 @@
 import { Animation } from ".";
 import { DrawPosition } from "../core/types";
 import { DynamicRenderer } from "../core/renderer";
-import { SpriteStore } from '../sprites';
+import { SpriteStore, Sprite } from '../sprites';
 
 export default class AnimatedSpriteRenderer extends DynamicRenderer {
     public readonly animation : Animation;
@@ -13,7 +13,7 @@ export default class AnimatedSpriteRenderer extends DynamicRenderer {
         this.animation.keyframes = this.animation.keyframes.sort((a, b)=> a.frame - b.frame);
     }
 
-    public draw(delta: number, position: DrawPosition) : any {
+    public draw(delta: number, position: DrawPosition) : Sprite[] {
         const ms = delta - this.startDelta;
         // Get current frame number
         const frame = ms * (this.animation.fps / 1000);
@@ -25,12 +25,13 @@ export default class AnimatedSpriteRenderer extends DynamicRenderer {
         // Get current keyframe
         const keyframe = this.animation.keyframes.filter(k => k.frame <= frame).pop();
         // If no frames exit;
-        if (!keyframe) return;
+        if (!keyframe) return [];
         // Now render the layers
         const { layers } = keyframe;
         // render each sprite in order of the array
         for (const layer of layers) {
             SpriteStore.getInstance().get(layer.rendererId).draw(layer.id, position);
         }
+        return layers;
     }
 }
