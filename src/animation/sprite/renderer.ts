@@ -1,13 +1,13 @@
-import { Animation } from ".";
-import { DrawPosition } from "../core/types";
-import { DynamicRenderer } from "../core/renderer";
-import { SpriteStore, Sprite } from '../sprites';
+import { SpriteAnimation } from ".";
+import { DrawPosition } from "../../core/types";
+import { DynamicRenderer } from "../../core/renderer";
+import { SpriteStore, Sprite } from '../../sprites';
 
 export default class AnimatedSpriteRenderer extends DynamicRenderer {
-    public readonly animation : Animation;
+    public readonly animation : SpriteAnimation;
     private startDelta : number = -1;
 
-    constructor (ctx: CanvasRenderingContext2D, animation : Animation) {
+    constructor (ctx: CanvasRenderingContext2D, animation : SpriteAnimation) {
         super(ctx)
         this.animation = animation;
         this.animation.keyframes = this.animation.keyframes.sort((a, b)=> a.frame - b.frame);
@@ -32,6 +32,7 @@ export default class AnimatedSpriteRenderer extends DynamicRenderer {
         for (const layer of layers) {
             SpriteStore.getInstance().get(layer.rendererId).draw(layer.id, position);
         }
+        // return the rendered layers
         return layers;
     }
 }

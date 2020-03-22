@@ -1,5 +1,5 @@
 import { SpriteStore, SpriteRenderer, SpriteSheetLoader } from '../src/sprites';
-import { AnimatedSpriteRenderer, AnimationLoopType } from '../src/animation'
+import { AnimatedSpriteRenderer, AnimationLoopType } from '../src/animation';
 
 const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
@@ -11,7 +11,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             height: 900
         },
         sprites: [
-            ['sr_1', 'sr_2', 'sr_3', 'sr_4'],
+            ['sr_1',  'sr_2',  'sr_3',  'sr_4' ],
             ['sr1_1', 'sr1_2', 'sr1_3', 'sr1_4'],
             ['sr2_1', 'sr2_2', 'sr2_3', 'sr2_4'],
             ['sr3_1', 'sr3_2', 'sr3_3', 'sr3_4'],
