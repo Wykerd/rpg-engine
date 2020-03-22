@@ -27,7 +27,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
     SpriteStore.getInstance().add(new SpriteRenderer(ctx, await pp.load()));
 
     const an = new AnimatedSpriteRenderer(ctx, {
-        loop: AnimationLoopType.linear,
+        loop: AnimationLoopType.oscillate,
         fps: 8,
         frames: 30,
         keyframes: pp.sprites.map((sprite, index) => {
