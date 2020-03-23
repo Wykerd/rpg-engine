@@ -51,7 +51,12 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             {
                 content: [
                     {
-                        text: 'Epic Gamer Moment, this is so'
+                        text: 'Epic Gamer Moment,'
+                    },
+                    {
+                        text: 'thissss is so very very very',
+                        
+
                     },
                     {
                         text: '...',
@@ -59,12 +64,12 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                     },
                     {
                         text: 'cool',
-                        prerender: (pos, index, ms, context) => {
+                        prerender: ({position, index, ms, ctx}) => {
                             return {
-                                x: pos.x,
-                                y: pos.y + (Math.sin((ms / 100) + index) * 2),
-                                width: pos.width,
-                                height: pos.height
+                                x: position.x,
+                                y: position.y + (Math.sin((ms / 100) + index) * 2),
+                                width: position.width,
+                                height: position.height
                             }
                         },
                         pause: 2000

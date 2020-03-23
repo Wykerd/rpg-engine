@@ -62,6 +62,8 @@ export default class DialogueRenderer extends DynamicRenderer {
         // calculate string of last completed
         let finalStr = lastText?.text || '';
         finalStr = finalStr.substr(0, finalStr.length - (ttc / (lastText?.speed ?? frame.speed ?? this.animation.speed)));
+        // get the last word in full
+        const finalWord = (lastText?.text || '').split(' ')[finalStr.split(' ').length - 1];
         // final text
         const finalText : DialogueAnimationText = {
             speed: lastText?.speed,
@@ -82,19 +84,31 @@ export default class DialogueRenderer extends DynamicRenderer {
         this.ctx.textBaseline = 'top';
         // space width
         // render the completed text
-        [...completeText, finalText].forEach((txt, txtIndex, finalRender) => {
+        const render = [...completeText, finalText];
+        const lastIndex = render.length - 1;
+
+        render.forEach((txt, txtIndex) => {
             const words = txt.text.split(' ');
             
             // Load the font
             this.setFont(Object.assign({}, this.animation.font, frame.font, txt.font) || {});
 
-            words.forEach(str => {
+            words.forEach((str, strIndex) => {
                 const length = this.ctx.measureText(str).width;
                 // move down a line if cant fit
                 if ((length > (position.width - cursor.x)) && (cursor.x > 0)) {
                     cursor.y += preHeight;
                     cursor.x = 0;
                 };
+                // check if final word fits
+                if (txtIndex === lastIndex) {
+                    if (words.length - 1 === strIndex) {
+                        if ((this.ctx.measureText(finalWord).width > (position.width - cursor.x)) && (cursor.x > 0)) {
+                            cursor.y += preHeight;
+                            cursor.x = 0;
+                        }
+                    }
+                }
                 // render it
                 str.split('').forEach(char => {
                     const charWidth = this.ctx.measureText(char).width;
@@ -106,7 +120,13 @@ export default class DialogueRenderer extends DynamicRenderer {
                     };
                     let finalPos : DrawPosition = calculatedPos;
                     
-                    if (txt.prerender instanceof Function) finalPos = txt.prerender(calculatedPos, charIndex, delta - this.startDelta, this.ctx);
+                    if (txt.prerender instanceof Function) finalPos = txt.prerender({
+                        position: calculatedPos, 
+                        index: charIndex, 
+                        ms: delta - this.startDelta, 
+                        ctx: this.ctx, 
+                        boundries: position
+                    });
                     
                     this.ctx.fillText(char, finalPos.x, finalPos.y, position.width);
 
