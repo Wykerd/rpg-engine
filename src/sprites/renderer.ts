@@ -17,13 +17,15 @@ export default class SpriteRenderer extends RendererBase {
             return debug.warn('Sprite render called on invalid ID', `\n\nSprite ID: ${id}\nSpriteSheet ID: ${this.spriteSheet.id}`);
         }
         this.ctx.drawImage(
-            this.spriteSheet.image, 
+            this.spriteSheet.image,
+            // crop from source 
             sprite.position.x, 
             sprite.position.y, 
             sprite.position.width, 
             sprite.position.height, 
-            position.x, 
-            position.y, 
+            // position on canvas
+            position.x + position.x, 
+            position.y + position.y, 
             position.width,
             position.height
         );
