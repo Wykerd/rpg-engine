@@ -71,31 +71,44 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                         },
                         pause: 3000,
                     }
-                ]
+                ],
+                speed: 0
             },
             {
                 content: [
                     {
-                        text: 'Don\'t ask me why,\nit\'s just so\n'
+                        text: 'Don\'t ask me why, it\'s just so\n',
+                        font: {
+                            font: '50px monospace',
+                            height: 50,
+                        }
                     },
                     {
                         text: 'AMAZING!',
                         space: false,
                         speed: 20,
                         pause: 5000,
-                        prerender: ({position, index, ms}) => {
-                            return {
+                        prerender: ({position, index, ms, ctx}) => {
+                            const nPos = {
                                 x: position.x,
                                 y: position.y + (Math.sin((ms / 15) + (index * 1.5)) * 3),
-                                width: position.width + 10,
+                                width: position.width + (Math.sin((ms / 150.00) + index) * 2),
                                 height: position.height
-                            }
+                            };
+
+                            ctx.strokeStyle = '#000';
+
+                            ctx.strokeRect(nPos.x, nPos.y, nPos.width, nPos.height);
+                            
+                            ctx.fillStyle = `rgb(${(Math.sin((ms / 100) + index) * 255)}, 15, 15)`;
+
+                            return nPos
                         }
                     }
                 ]
             }
         ],
-        loop: AnimationLoopType.once,
+        loop: AnimationLoopType.linear,
         speed: 100,
         id: 'epic',
         font: {
