@@ -103,7 +103,7 @@ export default class DialogueRenderer extends DynamicRenderer {
         render.forEach((txt, txtIndex) => {
             const words = txt.text.split(' ');
             // Before loading font, remove space on request
-            if (txt.space === false) {
+            if ((txt.space === false) && (cursor.x !== 0)) {
                 cursor.x -= this.ctx.measureText(' ').width;
             }
             // Load the font
@@ -126,9 +126,10 @@ export default class DialogueRenderer extends DynamicRenderer {
                     }
                 }
                 // render it
-                str.split('').forEach(char => {
+                str.split('').forEach((char, subStrCharIndex) => {
                     if (char === '\n') {
-                        cursor.x = 0;
+                        // this is added at the end of word so remove it here if end of word
+                        cursor.x = str.length - 1 === subStrCharIndex ? -this.ctx.measureText(' ').width : 0;
                         cursor.y += preHeight;
                         return;
                     }
@@ -149,7 +150,7 @@ export default class DialogueRenderer extends DynamicRenderer {
                         boundries: position
                     });
                     
-                    this.ctx.fillText(char, finalPos.x, finalPos.y, position.width);
+                    this.ctx.fillText(char, finalPos.x + position.x, finalPos.y + position.y, position.width);
 
                     // move the cursor
                     cursor.x += finalPos.width;

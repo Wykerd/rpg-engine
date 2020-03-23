@@ -95,10 +95,6 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                                 width: position.width + (Math.sin((ms / 150.00) + index) * 2),
                                 height: position.height
                             };
-
-                            ctx.strokeStyle = '#000';
-
-                            ctx.strokeRect(nPos.x, nPos.y, nPos.width, nPos.height);
                             
                             ctx.fillStyle = `rgb(${(Math.sin((ms / 100) + index) * 255)}, 15, 15)`;
 
