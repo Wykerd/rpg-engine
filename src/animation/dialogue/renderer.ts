@@ -2,18 +2,19 @@ import { DynamicRenderer } from "../../core/renderer";
 import { DialogueAnimationSequence, DialogueAnimationText } from "./types";
 import { DrawPosition, Point } from "../../core/types";
 import debug from "../../core/debug";
+import { AnimationLoopType } from "../types";
 
 export default class DialogueRenderer extends DynamicRenderer {
     public readonly animation : DialogueAnimationSequence;
     private startDelta : number = -1;
-    private preFrame : number = 0;
+    private currentFrame : number = 0;
 
     constructor(ctx: CanvasRenderingContext2D, animation: DialogueAnimationSequence) {
         super(ctx);
         this.animation = animation;
     }
 
-    public calculateFrameDuration(frame = this.animation.keyframes[this.preFrame]) : number {
+    public calculateFrameDuration(frame = this.animation.keyframes[this.currentFrame]) : number {
         let duration = 0;
         frame.content.forEach(text => {
             duration += 
@@ -32,16 +33,30 @@ export default class DialogueRenderer extends DynamicRenderer {
             return this.draw(delta, position);
         }
         // get frame
-        const frame = this.animation.keyframes[this.preFrame];
+        const frame = this.animation.keyframes[this.currentFrame];
         // get duration of frame
         const frameDuration = this.calculateFrameDuration();
         // check if done
         if (ms > frameDuration) {
             // move to next frame
             // TODO
-            
-            // if once stay on last frame!
-            ms = frameDuration;
+            const nextFrameIndex = this.currentFrame + 1; 
+            if (this.animation.keyframes.length - 1 < nextFrameIndex) {
+                // last frame
+                if (this.animation.loop === AnimationLoopType.once) {
+                    // hold on final frame
+                    ms = frameDuration;
+                } else {
+                    this.startDelta = delta;
+                    this.currentFrame = 0;
+                    return this.draw(delta, position);
+                }
+            } else {
+                // continue to next frame
+                this.startDelta = delta;
+                this.currentFrame = nextFrameIndex;
+                return this.draw(delta, position);
+            }
         }
         // Get the all the text to render
         let passed = 0;
@@ -137,7 +152,7 @@ export default class DialogueRenderer extends DynamicRenderer {
                     this.ctx.fillText(char, finalPos.x, finalPos.y, position.width);
 
                     // move the cursor
-                    cursor.x += charWidth;
+                    cursor.x += finalPos.width;
                     charIndex++;
                 });
                 // add space after word
@@ -148,7 +163,7 @@ export default class DialogueRenderer extends DynamicRenderer {
     }
 
     public getLastFrame() {
-        return this.preFrame;
+        return this.currentFrame;
     }
 
     public goto(frame: number) {
@@ -157,7 +172,7 @@ export default class DialogueRenderer extends DynamicRenderer {
             debug.error(err);
             throw err;
         }
-        this.preFrame = 0;
+        this.currentFrame = frame;
         // init state
         this.startDelta = -1;
     };

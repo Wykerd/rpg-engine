@@ -55,9 +55,9 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                     },
                     {
                         text: '...',
-                        speed: 50,
+                        speed: 150,
                         space: false,
-                        pause: 2000
+                        pause: 1000
                     },
                     {
                         text: 'cool',
@@ -69,13 +69,34 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                                 height: position.height
                             }
                         },
-                        pause: 2000,
+                        pause: 3000,
+                    }
+                ]
+            },
+            {
+                content: [
+                    {
+                        text: 'Don\'t ask me why,\nit\'s just so\n'
+                    },
+                    {
+                        text: 'AMAZING!',
+                        space: false,
+                        speed: 20,
+                        pause: 5000,
+                        prerender: ({position, index, ms}) => {
+                            return {
+                                x: position.x,
+                                y: position.y + (Math.sin((ms / 15) + (index * 1.5)) * 3),
+                                width: position.width + 10,
+                                height: position.height
+                            }
+                        }
                     }
                 ]
             }
         ],
         loop: AnimationLoopType.once,
-        speed: 20,
+        speed: 100,
         id: 'epic',
         font: {
             font: '100px sans-serif',
