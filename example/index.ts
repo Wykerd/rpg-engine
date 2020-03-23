@@ -51,34 +51,31 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             {
                 content: [
                     {
-                        text: 'Epic Gamer Moment,'
-                    },
-                    {
-                        text: 'thissss is so very very very',
-                        
-
+                        text: 'Epic gamer moment, this is so'
                     },
                     {
                         text: '...',
-                        speed: 500,
+                        speed: 50,
+                        space: false,
+                        pause: 2000
                     },
                     {
                         text: 'cool',
-                        prerender: ({position, index, ms, ctx}) => {
+                        prerender: ({position, index, ms}) => {
                             return {
                                 x: position.x,
-                                y: position.y + (Math.sin((ms / 100) + index) * 2),
+                                y: position.y + (Math.sin((ms / 150.00) + index) * 2),
                                 width: position.width,
                                 height: position.height
                             }
                         },
-                        pause: 2000
+                        pause: 2000,
                     }
                 ]
             }
         ],
         loop: AnimationLoopType.once,
-        speed: 100,
+        speed: 20,
         id: 'epic',
         font: {
             font: '100px sans-serif',

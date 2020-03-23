@@ -1,24 +1,19 @@
 import { DynamicRenderer } from "../../core/renderer";
-import { DialogueRenderState, DialogueAnimationSequence, DialogueAnimationText } from "./types";
+import { DialogueAnimationSequence, DialogueAnimationText } from "./types";
 import { DrawPosition, Point } from "../../core/types";
 import debug from "../../core/debug";
 
 export default class DialogueRenderer extends DynamicRenderer {
     public readonly animation : DialogueAnimationSequence;
     private startDelta : number = -1;
-    private preRenderState: DialogueRenderState = {
-        frame: 0,
-        text: [''],
-        delta: 0
-    };
-    public reverse : boolean = false;
+    private preFrame : number = 0;
 
     constructor(ctx: CanvasRenderingContext2D, animation: DialogueAnimationSequence) {
         super(ctx);
         this.animation = animation;
     }
 
-    public calculateFrameDuration(frame = this.animation.keyframes[this.preRenderState.frame]) : number {
+    public calculateFrameDuration(frame = this.animation.keyframes[this.preFrame]) : number {
         let duration = 0;
         frame.content.forEach(text => {
             duration += 
@@ -37,13 +32,15 @@ export default class DialogueRenderer extends DynamicRenderer {
             return this.draw(delta, position);
         }
         // get frame
-        const frame = this.animation.keyframes[this.preRenderState.frame];
+        const frame = this.animation.keyframes[this.preFrame];
         // get duration of frame
         const frameDuration = this.calculateFrameDuration();
         // check if done
         if (ms > frameDuration) {
             // move to next frame
             // TODO
+            
+            // if once stay on last frame!
             ms = frameDuration;
         }
         // Get the all the text to render
@@ -61,7 +58,7 @@ export default class DialogueRenderer extends DynamicRenderer {
         const ttc = passed - ms;
         // calculate string of last completed
         let finalStr = lastText?.text || '';
-        finalStr = finalStr.substr(0, finalStr.length - (ttc / (lastText?.speed ?? frame.speed ?? this.animation.speed)));
+        finalStr = finalStr.substr(0, finalStr.length - ((ttc - (lastText?.pause || 0)) / (lastText?.speed ?? frame.speed ?? this.animation.speed)));
         // get the last word in full
         const finalWord = (lastText?.text || '').split(' ')[finalStr.split(' ').length - 1];
         // final text
@@ -70,7 +67,8 @@ export default class DialogueRenderer extends DynamicRenderer {
             text: finalStr,
             font: lastText?.font,
             prerender: lastText?.prerender,
-            pause: lastText?.pause
+            pause: lastText?.pause,
+            space: lastText?.space
         };
         // cursor tells us where to render next text
         const cursor : Point = {
@@ -89,7 +87,10 @@ export default class DialogueRenderer extends DynamicRenderer {
 
         render.forEach((txt, txtIndex) => {
             const words = txt.text.split(' ');
-            
+            // Before loading font, remove space on request
+            if (txt.space === false) {
+                cursor.x -= this.ctx.measureText(' ').width;
+            }
             // Load the font
             this.setFont(Object.assign({}, this.animation.font, frame.font, txt.font) || {});
 
@@ -111,6 +112,11 @@ export default class DialogueRenderer extends DynamicRenderer {
                 }
                 // render it
                 str.split('').forEach(char => {
+                    if (char === '\n') {
+                        cursor.x = 0;
+                        cursor.y += preHeight;
+                        return;
+                    }
                     const charWidth = this.ctx.measureText(char).width;
                     const calculatedPos : DrawPosition = {
                         x: cursor.x,
@@ -141,8 +147,8 @@ export default class DialogueRenderer extends DynamicRenderer {
         })
     }
 
-    public getPreviousRenderState() {
-        return this.preRenderState;
+    public getLastFrame() {
+        return this.preFrame;
     }
 
     public goto(frame: number) {
@@ -151,10 +157,8 @@ export default class DialogueRenderer extends DynamicRenderer {
             debug.error(err);
             throw err;
         }
-        this.preRenderState = {
-            frame,
-            text: [''],
-            delta: 0
-        }
+        this.preFrame = 0;
+        // init state
+        this.startDelta = -1;
     };
 }
