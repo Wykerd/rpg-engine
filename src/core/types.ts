@@ -9,3 +9,9 @@ export interface Point {
 }
 
 export interface DrawPosition extends Dimensions, Point {}
+
+export interface TextFont {
+    fillStyle?: string | CanvasGradient | CanvasPattern,
+    font?: string,
+    height?: number
+}

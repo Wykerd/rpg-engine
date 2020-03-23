@@ -49,15 +49,40 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
     const ff = new DialogueRenderer(ctx, {
         keyframes: [
             {
-                text: 'Epic Gamer Moment, this is so cool'
+                content: [
+                    {
+                        text: 'Epic Gamer Moment, this is so'
+                    },
+                    {
+                        text: '...',
+                        speed: 500,
+                    },
+                    {
+                        text: 'cool',
+                        prerender: (pos, index, ms, context) => {
+                            return {
+                                x: pos.x,
+                                y: pos.y + (Math.sin((ms / 100) + index) * 2),
+                                width: pos.width,
+                                height: pos.height
+                            }
+                        },
+                        pause: 2000
+                    }
+                ]
             }
         ],
         loop: AnimationLoopType.once,
         speed: 100,
-        font: '100px sans-serif',
-        id: 'epic'
-    })
-    
+        id: 'epic',
+        font: {
+            font: '100px sans-serif',
+            height: 100
+        }
+    });
+
+    console.log(ff.calculateFrameDuration())
+
     let preDelta : number = -1;
     const dr = (delta : number) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -75,14 +100,16 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             height: 450
         });
 
-        //ctx.font = '20px sans-serif';
+        ctx.font = '20px sans-serif';
 
-        //ctx.fillText((1000/(delta - preDelta)).toFixed(0).toString(), 10, 50)
-        //preDelta = delta;
+        ctx.fillText((1000/(delta - preDelta)).toFixed(0).toString(), 10, 340)
+        preDelta = delta;
 
-        //ctx.font = '15px sans-serif';
-
-        //ctx.fillText(JSON.stringify(yes), 10, 20);
+        ctx.font = '10px sans-serif';
+        const renderStack = JSON.stringify([yes, ok], null, ' ');
+        renderStack.split('\n').forEach((ln, i) => {
+            ctx.fillText(ln, 10, 360 + (12*i))
+        })
 
         requestAnimationFrame(dr);
     };

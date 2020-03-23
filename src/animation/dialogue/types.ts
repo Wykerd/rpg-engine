@@ -1,21 +1,28 @@
 import { AnimationLoopType } from "../types";
-import { DrawPosition } from "../../core/types";
+import { DrawPosition, TextFont } from "../../core/types";
 
-export interface DialogueAnimationFrame {
+export interface DialogueAnimationText {
     speed?: number, // individual dialog speed override
     text: string,
-    font?: string, // override to default
-    position?: (position: DrawPosition, index: number, ms: number) => DrawPosition
+    font?: TextFont, // override to default
+    prerender?: (position: DrawPosition, index: number, ms: number, ctx: CanvasRenderingContext2D) => DrawPosition;
     // override letter positions for more complex animations
     pause?: number // pause between dialogs
 }
 
 export interface DialogueAnimation {
-    keyframes: DialogueAnimationFrame[],
+    speed?: number, // individual dialog speed override
+    content: DialogueAnimationText[],
+    font?: TextFont, // override to default
+    pause?: number // pause between dialogs
+}
+
+export interface DialogueAnimationSequence {
+    keyframes: DialogueAnimation[],
     loop: AnimationLoopType,
     speed: number, // global speed
     pause?: number, // global pause default 0
-    font?: string, // canvas font string
+    font?: TextFont, // canvas font string
     id: string
 }
 
