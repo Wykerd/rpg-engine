@@ -10,7 +10,7 @@ export abstract class RendererBase {
 }
 
 export abstract class DynamicRenderer extends RendererBase {
-    abstract draw(delta: number, position: DrawPosition) : Sprite[];
+    abstract draw(delta: number, position: DrawPosition) : any;
 }
 
 export abstract class StaticRenderer extends RendererBase {

@@ -1,5 +1,6 @@
 import { SpriteStore, SpriteRenderer, SpriteSheetLoader } from '../src/sprites';
 import { AnimatedSpriteRenderer, AnimationLoopType } from '../src/animation';
+import { DialogueRenderer } from '../src/animation/dialogue';
 
 const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
@@ -43,6 +44,19 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
     canvas.height = 700;
     
     const spr = SpriteStore.getInstance().get('spr_1');
+
+    // dialog test
+    const ff = new DialogueRenderer(ctx, {
+        keyframes: [
+            {
+                text: 'Epic Gamer Moment, this is so cool'
+            }
+        ],
+        loop: AnimationLoopType.once,
+        speed: 100,
+        font: '100px sans-serif',
+        id: 'epic'
+    })
     
     let preDelta : number = -1;
     const dr = (delta : number) => {
@@ -54,14 +68,21 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             height: 450
         });
         
-        ctx.font = '20px sans-serif';
+        const ok = ff.draw(delta, {
+            x: 0,
+            y: 0,
+            width: 600,
+            height: 450
+        });
 
-        ctx.fillText((1000/(delta - preDelta)).toFixed(0).toString(), 10, 50)
-        preDelta = delta;
+        //ctx.font = '20px sans-serif';
 
-        ctx.font = '15px sans-serif';
+        //ctx.fillText((1000/(delta - preDelta)).toFixed(0).toString(), 10, 50)
+        //preDelta = delta;
 
-        ctx.fillText(JSON.stringify(yes), 10, 20);
+        //ctx.font = '15px sans-serif';
+
+        //ctx.fillText(JSON.stringify(yes), 10, 20);
 
         requestAnimationFrame(dr);
     };
