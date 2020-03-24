@@ -16,7 +16,6 @@ export interface DialogueAnimationText {
     prerender?: (context: DialogueRenderContext) => DrawPosition;
     // override letter positions for more complex animations
     pause?: number // pause between dialogs
-    space?: boolean
 }
 
 export interface DialogueAnimation {

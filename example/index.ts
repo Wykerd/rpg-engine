@@ -54,9 +54,8 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                         text: 'Epic gamer moment, this is so'
                     },
                     {
-                        text: '...',
+                        text: '... ',
                         speed: 150,
-                        space: false,
                         pause: 1000
                     },
                     {
@@ -69,15 +68,15 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                                 height: position.height
                             }
                         },
-                        pause: 3000,
+                        pause: 2000,
                     }
                 ],
-                speed: 0
+                speed: 100
             },
             {
                 content: [
                     {
-                        text: 'Don\'t ask me why, it\'s just so\n',
+                        text: 'Don\'t ask me why,\nit\'s just so\n',
                         font: {
                             font: '50px monospace',
                             height: 50,
@@ -85,7 +84,6 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                     },
                     {
                         text: 'AMAZING!',
-                        space: false,
                         speed: 20,
                         pause: 5000,
                         prerender: ({position, index, ms, ctx}) => {

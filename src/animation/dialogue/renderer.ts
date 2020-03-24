@@ -82,8 +82,7 @@ export default class DialogueRenderer extends DynamicRenderer {
             text: finalStr,
             font: lastText?.font,
             prerender: lastText?.prerender,
-            pause: lastText?.pause,
-            space: lastText?.space
+            pause: lastText?.pause
         };
         // cursor tells us where to render next text
         const cursor : Point = {
@@ -102,15 +101,12 @@ export default class DialogueRenderer extends DynamicRenderer {
 
         render.forEach((txt, txtIndex) => {
             const words = txt.text.split(' ');
-            // Before loading font, remove space on request
-            if ((txt.space === false) && (cursor.x !== 0)) {
-                cursor.x -= this.ctx.measureText(' ').width;
-            }
+
             // Load the font
             this.setFont(Object.assign({}, this.animation.font, frame.font, txt.font) || {});
 
             words.forEach((str, strIndex) => {
-                const length = this.ctx.measureText(str).width;
+                const length = this.ctx.measureText(str.split('\n').shift() || '').width;
                 // move down a line if cant fit
                 if ((length > (position.width - cursor.x)) && (cursor.x > 0)) {
                     cursor.y += preHeight;
@@ -119,7 +115,7 @@ export default class DialogueRenderer extends DynamicRenderer {
                 // check if final word fits
                 if (txtIndex === lastIndex) {
                     if (words.length - 1 === strIndex) {
-                        if ((this.ctx.measureText(finalWord).width > (position.width - cursor.x)) && (cursor.x > 0)) {
+                        if ((this.ctx.measureText(finalWord.split('\n').shift() || '').width > (position.width - cursor.x)) && (cursor.x > 0)) {
                             cursor.y += preHeight;
                             cursor.x = 0;
                         }
@@ -128,9 +124,8 @@ export default class DialogueRenderer extends DynamicRenderer {
                 // render it
                 str.split('').forEach((char, subStrCharIndex) => {
                     if (char === '\n') {
-                        // this is added at the end of word so remove it here if end of word
-                        cursor.x = str.length - 1 === subStrCharIndex ? -this.ctx.measureText(' ').width : 0;
-                        cursor.y += preHeight;
+                        cursor.x = 0;
+                        cursor.y += txt.font?.height || frame.font?.height || this.animation.font?.height || 12;
                         return;
                     }
                     const charWidth = this.ctx.measureText(char).width;
@@ -160,6 +155,7 @@ export default class DialogueRenderer extends DynamicRenderer {
                 cursor.x += this.ctx.measureText(' ').width;
                 preHeight = txt.font?.height || frame.font?.height || this.animation.font?.height || 12;
             });
+            cursor.x -= this.ctx.measureText(' ').width;
         })
     }
 
