@@ -1,5 +1,5 @@
 import { SpriteStore, SpriteRenderer, SpriteSheetLoader } from '../src/sprites';
-import { AnimatedSpriteRenderer, AnimationLoopType } from '../src/animation';
+import { AnimatedSpriteRenderer, AnimationLoopType, DialogueAnimationLoopType, DialogueBubbleRenderer } from '../src/animation';
 import { DialogueRenderer } from '../src/animation/dialogue';
 import { BubbleRenderer, BubbleTerminators } from '../src/animation/bubble';
 
@@ -69,7 +69,6 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                                 height: position.height
                             }
                         },
-                        pause: 2000,
                     }
                 ],
                 speed: 100
@@ -96,12 +95,12 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                 ]
             }
         ],
-        loop: AnimationLoopType.linear,
+        loop: DialogueAnimationLoopType.pause,
         speed: 100,
         id: 'epic',
         font: {
-            font: '100px sans-serif',
-            height: 100
+            font: '50px sans-serif',
+            height: 50
         }
     });
 
@@ -114,23 +113,30 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             point.y += (Math.sin((ms / 300.00) + (point.x / 80)) * 2)
             return point;
         },
-        terminator: BubbleTerminators.stroke('#222'),
+        terminator: BubbleTerminators.fill('#222222c0'),
         corner: () => 60
     });
+
+    const boomer = new DialogueBubbleRenderer(ctx, {
+        loop: DialogueAnimationLoopType.once,
+        pause: 1000,
+        transition: 500,
+        padding: 50
+    }, ff, ey);
 
     console.log(ff.calculateFrameDuration());
 
     let preDelta : number = -1;
     const dr = (delta : number) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const yes = an.draw(delta, {
+        /*const yes = an.draw(delta, {
             x: 0,
             y: 0,
             width: 600,
             height: 450
         });
         
-        /*const ok = ff.draw(delta, {
+        const ok = ff.draw(delta, {
             x: 0,
             y: 0,
             width: 600,
@@ -138,7 +144,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
         });*/
 
 
-        ey.draw(delta, { x: 50, y: 50, height: 300, width: 500 })
+        // ey.draw(delta, { x: 50, y: 50, height: 300, width: 500 })
 
         /*const dim = ff.getDimensions({
             x: 0,
@@ -152,6 +158,13 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
         ctx.moveTo(0, dim.height);
         ctx.lineTo(dim.width, dim.height);
         ctx.stroke();*/
+
+        boomer.draw(delta, {
+            x: 50,
+            y: 50,
+            width: 600,
+            height: 450
+        })
 
         ctx.font = '20px sans-serif';
 

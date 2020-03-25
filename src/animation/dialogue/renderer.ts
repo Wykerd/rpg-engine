@@ -1,5 +1,5 @@
 import { DynamicRenderer } from "../../core/renderer";
-import { DialogueAnimationSequence, DialogueAnimationText } from "./types";
+import { DialogueAnimationSequence, DialogueAnimationText, DialogueAnimationLoopType } from "./types";
 import { DrawPosition, Point } from "../../core/types";
 import debug from "../../core/debug";
 import { AnimationLoopType } from "../types";
@@ -124,23 +124,31 @@ export default class DialogueRenderer extends DynamicRenderer {
         // check if done
         if (ms > frameDuration) {
             // move to next frame
-            // TODO
             const nextFrameIndex = this.currentFrame + 1; 
             if (this.animation.keyframes.length - 1 < nextFrameIndex) {
                 // last frame
-                if (this.animation.loop === AnimationLoopType.once) {
+                if (this.animation.loop === DialogueAnimationLoopType.once) {
                     // hold on final frame
                     ms = frameDuration;
                 } else {
+                    if (this.animation.loop !== DialogueAnimationLoopType.pause) {
+                        this.startDelta = delta;
+                        this.currentFrame = 0;
+                        return this.draw(delta, position);
+                    } else {
+                        // hold on final frame
+                        ms = frameDuration;
+                    }
+                }
+            } else {
+                if (this.animation.loop !== DialogueAnimationLoopType.pause) {
                     this.startDelta = delta;
                     this.currentFrame = 0;
                     return this.draw(delta, position);
+                } else {
+                    // hold on current frame
+                    ms = frameDuration;
                 }
-            } else {
-                // continue to next frame
-                this.startDelta = delta;
-                this.currentFrame = nextFrameIndex;
-                return this.draw(delta, position);
             }
         }
         // Get the all the text to render

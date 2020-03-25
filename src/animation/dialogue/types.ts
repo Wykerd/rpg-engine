@@ -27,9 +27,15 @@ export interface DialogueAnimation {
 
 export interface DialogueAnimationSequence {
     keyframes: DialogueAnimation[],
-    loop: AnimationLoopType,
+    loop: DialogueAnimationLoopType,
     speed: number, // global speed
     pause?: number, // global pause default 0
     font?: TextFont, // canvas font string
     id: string
+}
+
+export enum DialogueAnimationLoopType {
+    once = 'once',
+    pause = 'pause',
+    loop = 'loop'
 }
