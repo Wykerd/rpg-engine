@@ -25,6 +25,91 @@ export default class DialogueRenderer extends DynamicRenderer {
         return duration;
     }
 
+    public getDimensions(position: DrawPosition, frame = this.animation.keyframes[this.currentFrame]) : DrawPosition {
+        // get duration of frame
+        const frameDuration = this.calculateFrameDuration();
+        
+        // keep track of max width
+        let w = 0;
+
+        const { content } = frame;
+
+        // cursor tells us position of next text
+        const cursor : Point = {
+            x: 0,
+            y: 0
+        };
+        // indexes + contexts
+        let charIndex = 0;
+        let preHeight = 0;
+        // set context text baseline
+        this.ctx.textBaseline = 'top';
+
+        content.forEach(txt => {
+            const words = txt.text.split(' ');
+
+            // Load the font
+            this.setFont(Object.assign({}, this.animation.font, frame.font, txt.font) || {});
+
+            words.forEach(str => {
+                const length = this.ctx.measureText(str.split('\n').shift() || '').width;
+
+                // move down a line if cant fit
+                if ((length > (position.width - cursor.x)) && (cursor.x > 0)) {
+                    cursor.y += preHeight;
+                    cursor.x = 0;
+                };
+                
+                // render it
+                str.split('').forEach(char => {
+                    if (char === '\n') {
+                        cursor.x = 0;
+                        cursor.y += txt.font?.height || frame.font?.height || this.animation.font?.height || 12;
+                        return;
+                    }
+                    const charWidth = this.ctx.measureText(char).width;
+                    const calculatedPos : DrawPosition = {
+                        x: cursor.x,
+                        y: cursor.y,
+                        width: charWidth,
+                        height: txt.font?.height || frame.font?.height || this.animation.font?.height || 12
+                    };
+                    let finalPos : DrawPosition = calculatedPos;
+                    
+                    if (txt.prerender instanceof Function) finalPos = txt.prerender({
+                        position: calculatedPos, 
+                        index: charIndex, 
+                        ms: frameDuration, 
+                        ctx: this.ctx, 
+                        boundries: position
+                    });
+
+                    // move the cursor
+                    cursor.x += finalPos.width;
+                    charIndex++;
+                });
+                // space length
+                const spL = this.ctx.measureText(' ').width;
+                // add space after word
+                cursor.x += spL;
+                preHeight = txt.font?.height || frame.font?.height || this.animation.font?.height || 12;
+                // remove space at end
+                if (w < cursor.x) w = cursor.x - spL;
+            });
+            // remove last space
+            cursor.x -= this.ctx.measureText(' ').width;
+        });
+        // now get the height
+        const h = cursor.y + preHeight;
+
+        return {
+            x: position.x,
+            y: position.y,
+            width: w,
+            height: h
+        };
+    } 
+
     public draw(delta: number, position: DrawPosition) : void {
         let ms = delta - this.startDelta;
         // If first render startDelta is -1 so set to first frame

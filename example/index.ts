@@ -76,13 +76,6 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             {
                 content: [
                     {
-                        text: 'Don\'t ask me why,\nit\'s just so\n',
-                        font: {
-                            font: '50px monospace',
-                            height: 50,
-                        }
-                    },
-                    {
                         text: 'AMAZING!',
                         speed: 20,
                         pause: 5000,
@@ -111,7 +104,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
         }
     });
 
-    console.log(ff.calculateFrameDuration())
+    console.log(ff.calculateFrameDuration());
 
     let preDelta : number = -1;
     const dr = (delta : number) => {
@@ -129,6 +122,19 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             width: 600,
             height: 450
         });
+
+        const dim = ff.getDimensions({
+            x: 0,
+            y: 0,
+            width: 600,
+            height: 450
+        });
+
+        ctx.strokeStyle = '#000';
+        ctx.beginPath();
+        ctx.moveTo(0, dim.height);
+        ctx.lineTo(dim.width, dim.height);
+        ctx.stroke();
 
         ctx.font = '20px sans-serif';
 
