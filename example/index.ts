@@ -1,6 +1,7 @@
 import { SpriteStore, SpriteRenderer, SpriteSheetLoader } from '../src/sprites';
 import { AnimatedSpriteRenderer, AnimationLoopType } from '../src/animation';
 import { DialogueRenderer } from '../src/animation/dialogue';
+import { BubbleRenderer, BubbleTerminators } from '../src/animation/bubble';
 
 const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
@@ -104,6 +105,19 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
         }
     });
 
+    const ey = new BubbleRenderer(ctx, {
+        vertical: (point, ms) => {
+            point.x += (Math.sin((ms / 300.00) + (point.y / 80)) * 2)
+            return point;
+        },
+        horizontal: (point, ms) => {
+            point.y += (Math.sin((ms / 300.00) + (point.x / 80)) * 2)
+            return point;
+        },
+        terminator: BubbleTerminators.stroke('#222'),
+        corner: () => 60
+    });
+
     console.log(ff.calculateFrameDuration());
 
     let preDelta : number = -1;
@@ -116,14 +130,17 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             height: 450
         });
         
-        const ok = ff.draw(delta, {
+        /*const ok = ff.draw(delta, {
             x: 0,
             y: 0,
             width: 600,
             height: 450
-        });
+        });*/
 
-        const dim = ff.getDimensions({
+
+        ey.draw(delta, { x: 50, y: 50, height: 300, width: 500 })
+
+        /*const dim = ff.getDimensions({
             x: 0,
             y: 0,
             width: 600,
@@ -134,7 +151,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
         ctx.beginPath();
         ctx.moveTo(0, dim.height);
         ctx.lineTo(dim.width, dim.height);
-        ctx.stroke();
+        ctx.stroke();*/
 
         ctx.font = '20px sans-serif';
 
@@ -142,10 +159,10 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
         preDelta = delta;
 
         ctx.font = '10px sans-serif';
-        const renderStack = JSON.stringify([yes, ok], null, ' ');
+        /*const renderStack = JSON.stringify([yes, ok], null, ' ');
         renderStack.split('\n').forEach((ln, i) => {
             ctx.fillText(ln, 10, 360 + (12*i))
-        })
+        })*/
 
         requestAnimationFrame(dr);
     };

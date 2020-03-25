@@ -15,3 +15,15 @@ export interface TextFont {
     font?: string,
     height?: number
 }
+
+export enum HorizontalEgde {
+    top = 'top',
+    bottom = 'bottom'
+};
+
+export enum VericalEdge {
+    right = 'right',
+    left = 'left'
+}
+
+export type Corner = [HorizontalEgde, VericalEdge];
