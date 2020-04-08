@@ -74,8 +74,6 @@ export default class DialogueBubbleRenderer extends DynamicRenderer {
                 y: position.y,
                 height: pos.height + (this.options.padding * 2) - (Math.sin(0.5 * Math.PI * transitionPersentage) * h_diff),
                 width: pos.width + (this.options.padding * 2) - (Math.sin(0.5 * Math.PI * transitionPersentage) * w_diff)
-                //height: pos.height + (this.options.padding * 2) - h_diff,
-                //width: pos.width + (this.options.padding * 2) - w_diff
             };
             // render the bubble
             this.bubble.draw(delta, currBubblePos);

@@ -57,7 +57,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                     {
                         text: '... ',
                         speed: 150,
-                        pause: 1000
+                        pause: 500
                     },
                     {
                         text: 'cool',
@@ -78,7 +78,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
                     {
                         text: 'AMAZING!',
                         speed: 20,
-                        pause: 5000,
+                        pause: 4000,
                         prerender: ({position, index, ms, ctx}) => {
                             const nPos = {
                                 x: position.x,
@@ -119,7 +119,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
     const boomer = new DialogueBubbleRenderer(ctx, {
         loop: DialogueAnimationLoopType.once,
-        pause: 1000,
+        pause: 2000,
         transition: 500,
         padding: 50
     }, ff, ey);
@@ -129,35 +129,35 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
     let preDelta : number = -1;
     const dr = (delta : number) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        /*const yes = an.draw(delta, {
+        const yes = an.draw(delta, {
             x: 0,
             y: 0,
             width: 600,
             height: 450
         });
         
-        const ok = ff.draw(delta, {
+        /* const ok = ff.draw(delta, {
             x: 0,
             y: 0,
             width: 600,
             height: 450
-        });*/
+        }); */
 
 
         // ey.draw(delta, { x: 50, y: 50, height: 300, width: 500 })
 
-        /*const dim = ff.getDimensions({
+        /* const dim = ff.getDimensions({
             x: 0,
             y: 0,
             width: 600,
             height: 450
-        });
+        }); */
 
         ctx.strokeStyle = '#000';
         ctx.beginPath();
-        ctx.moveTo(0, dim.height);
-        ctx.lineTo(dim.width, dim.height);
-        ctx.stroke();*/
+        //ctx.moveTo(0, dim.height);
+        //ctx.lineTo(dim.width, dim.height);
+        ctx.stroke();
 
         boomer.draw(delta, {
             x: 50,
@@ -167,7 +167,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
         })
 
         ctx.font = '20px sans-serif';
-
+        // if (1000/(delta - preDelta) < 55) console.log('Frame drop', 1000/(delta - preDelta));
         ctx.fillText((1000/(delta - preDelta)).toFixed(0).toString(), 10, 340)
         preDelta = delta;
 
