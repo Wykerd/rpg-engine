@@ -1,4 +1,4 @@
-import { MaybeStrokeStyle, StrokeStyle } from "./types";
+import { MaybeStrokeStyle, StrokeStyle, Point } from "./types";
 
 namespace Helpers {
     export const StrokeStyleFromMaybe = (maybe?: MaybeStrokeStyle) : StrokeStyle => {
@@ -9,6 +9,13 @@ namespace Helpers {
             lineJoin: 'round',
             ...maybe
         }
+    }
+
+    export const RadiansToVector = (rad: number) : Point => {
+        return {
+            x: Math.cos(rad),
+            y: Math.sin(rad)
+        };
     }
 }
 

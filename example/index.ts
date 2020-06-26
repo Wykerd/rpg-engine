@@ -4,6 +4,7 @@ import { DialogueRenderer } from '../src/animation/dialogue';
 import { BubbleRenderer, BubbleTerminators } from '../src/animation/bubble';
 import { PolygonRenderer } from '../src/geometry/polygon';
 import Helpers from '../src/core/helpers';
+import Particle from '../src/geometry/particle'
 
 const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
@@ -132,10 +133,56 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
     const polygon = {
         path: [ 
+            { x: 100, y: 100 }, 
+            { x: 200, y: 150 },
+            { x: 150, y: 200 },
+            { x: 100, y: 190 } 
+        ],
+        anchor: {
+            x: 0,
+            y: 0
+        },
+        style: Helpers.StrokeStyleFromMaybe()
+    };
+
+    const p2 = {
+        path: [ 
+            { x: 300, y: 300 }, 
+            { x: 400, y: 350 },
+            { x: 350, y: 400 },
+            { x: 300, y: 390 } 
+        ],
+        anchor: {
+            x: 0,
+            y: 0
+        },
+        style: Helpers.StrokeStyleFromMaybe()
+    };
+
+    const p3 = {
+        path: [ 
+            {x: 450, y: 100},
+            {x: 380, y: 110},
+            {x: 420, y: 150},
+            {x: 400, y: 250},
+            {x: 360, y: 200},
+            {x: 280, y: 260},
+            {x: 390, y: 320},
+            {x: 410, y: 270}
+        ],
+        anchor: {
+            x: 0,
+            y: 0
+        },
+        style: Helpers.StrokeStyleFromMaybe()
+    };
+
+    const bounding_box = {
+        path: [ 
             { x: 0, y: 0 }, 
-            { x: 100, y: 50 },
-            { x: 50, y: 100 },
-            { x: 0, y: 90 } 
+            { x: 0, y: 600 },
+            { x: 600, y: 600 },
+            { x: 600, y: 0 } 
         ],
         anchor: {
             x: 0,
@@ -145,6 +192,28 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
     };
 
     const pol_render = new PolygonRenderer(ctx, polygon);
+    const pol_render2 = new PolygonRenderer(ctx, p2);
+    const pol_render3 = new PolygonRenderer(ctx, p3);
+    const bond_rend = new PolygonRenderer(ctx, bounding_box);
+
+    const particle = new Particle(80, 20);
+
+    let emit = particle.emit([ polygon, bounding_box, p2 ]);
+
+    canvas.addEventListener('mousemove', (e) => {
+        particle.x = e.clientX;
+        particle.y = e.clientY;
+        console.time('oof')
+        emit = particle.emit([ polygon, bounding_box, p2, p3 ]);
+        console.timeEnd('oof')
+    });
+/*
+    const intersect = particle.cast([ { x: 0, y: 100 }, { x: 100, y: 100 } ],  Helpers.RadiansToVector(1.91986));
+
+    const closest = particle.hit([ { x: 0, y: 80 }, { x: 100, y: 80 }, { x: 100, y: 100 }, { x: 0, y: 100 } ], Helpers.RadiansToVector(1.91986));
+*/
+
+    console.log('emit', emit);
 
     let preDelta : number = -1;
     const dr = (delta : number) => {
@@ -173,18 +242,18 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             height: 450
         }); */
 
-        /*ctx.strokeStyle = '#000';
+        ctx.strokeStyle = '#000';
         ctx.beginPath();
         //ctx.moveTo(0, dim.height);
         //ctx.lineTo(dim.width, dim.height);
         ctx.stroke();
 
-        boomer.draw(delta, {
+        /*boomer.draw(delta, {
             x: 50,
             y: 50,
             width: 600,
             height: 450
-        })
+        })*/
 
         ctx.font = '20px sans-serif';
         // if (1000/(delta - preDelta) < 55) console.log('Frame drop', 1000/(delta - preDelta));
@@ -197,7 +266,51 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             ctx.fillText(ln, 10, 360 + (12*i))
         })*/
 
-        pol_render.draw({ x: 0, y: 0, ...pol_render.dimensions })
+        pol_render.draw({ x: 0, y: 0, ...pol_render.dimensions });
+        bond_rend.draw({ x: 0, y: 0, ...bond_rend.dimensions });
+        pol_render2.draw({ x: 0, y: 0, ...pol_render2.dimensions });
+        pol_render3.draw({ x: 0, y: 0, ...pol_render3.dimensions });
+
+        /*ctx.fillStyle = "#dd3838";
+        ctx.beginPath();
+        ctx.arc(intersect.x, intersect.y, 4, 0, 2*Math.PI, false);
+        ctx.fill();
+        ctx.fillStyle = "#dd3838";
+        ctx.beginPath();
+        ctx.arc(intersect2.x, intersect2.y, 4, 0, 2*Math.PI, false);
+        ctx.fill();
+
+        ctx.fillStyle = "blue";
+        ctx.beginPath();
+        ctx.arc(closest.x, closest.y, 2, 0, 2*Math.PI, false);
+        ctx.fill();*/
+
+        ctx.fillStyle = ctx.createRadialGradient(particle.x, particle.y, 2, particle.x, particle.y, 300);
+        ctx.fillStyle.addColorStop(0, "#F6CD8B90");
+        ctx.fillStyle.addColorStop(1, "#00000000");
+        // ctx.fillStyle = "#dd3838";
+        ctx.beginPath();
+        ctx.moveTo(emit[0].x, emit[0].y);
+        emit.forEach(pt => {
+            ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.closePath();
+        ctx.fill();
+
+        /*emit.forEach(pt => {
+            ctx.fillStyle = "blue";
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 3, 0, 2*Math.PI, false);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = "blue";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(pt.x, pt.y);
+            ctx.closePath();
+            ctx.stroke();
+        })*/
 
         requestAnimationFrame(dr);
     };
