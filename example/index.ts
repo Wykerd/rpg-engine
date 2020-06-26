@@ -2,8 +2,12 @@ import { SpriteStore, SpriteRenderer, SpriteSheetLoader } from '../src/sprites';
 import { AnimatedSpriteRenderer, AnimationLoopType, DialogueAnimationLoopType, DialogueBubbleRenderer } from '../src/animation';
 import { DialogueRenderer } from '../src/animation/dialogue';
 import { BubbleRenderer, BubbleTerminators } from '../src/animation/bubble';
+import { PolygonRenderer } from '../src/geometry/polygon';
+import Helpers from '../src/core/helpers';
 
 const canvas : HTMLCanvasElement = document.querySelector('canvas');
+
+(window as any).SpriteStore = SpriteStore;
 
 (async () => {
     const pp = new SpriteSheetLoader({
@@ -126,10 +130,26 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
 
     console.log(ff.calculateFrameDuration());
 
+    const polygon = {
+        path: [ 
+            { x: 0, y: 0 }, 
+            { x: 100, y: 50 },
+            { x: 50, y: 100 },
+            { x: 0, y: 90 } 
+        ],
+        anchor: {
+            x: 0,
+            y: 0
+        },
+        style: Helpers.StrokeStyleFromMaybe()
+    };
+
+    const pol_render = new PolygonRenderer(ctx, polygon);
+
     let preDelta : number = -1;
     const dr = (delta : number) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const yes = an.draw(delta, {
+        /*const yes = an.draw(delta, {
             x: 0,
             y: 0,
             width: 600,
@@ -153,7 +173,7 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             height: 450
         }); */
 
-        ctx.strokeStyle = '#000';
+        /*ctx.strokeStyle = '#000';
         ctx.beginPath();
         //ctx.moveTo(0, dim.height);
         //ctx.lineTo(dim.width, dim.height);
@@ -177,10 +197,14 @@ const canvas : HTMLCanvasElement = document.querySelector('canvas');
             ctx.fillText(ln, 10, 360 + (12*i))
         })*/
 
+        pol_render.draw({ x: 0, y: 0, ...pol_render.dimensions })
+
         requestAnimationFrame(dr);
     };
 
     requestAnimationFrame(dr);
     
-    console.log(spr)
+    console.log(spr);
+
+    console.log(pol_render.dimensions);
 })();

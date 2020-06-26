@@ -51,7 +51,7 @@ export default class DialogueBubbleRenderer extends DynamicRenderer {
             });
             this.dialogue.draw(delta, pos);
         } else if (last) {
-            // last frame not implimented :-)
+            // TODO: last frame not implimented :-)
             this.startDelta = delta;
             this.dialogue.goto(0);
             return this.draw(delta, position);

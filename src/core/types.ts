@@ -26,4 +26,22 @@ export enum VericalEdge {
     left = 'left'
 }
 
+export interface StrokeStyle {
+    strokeStyle: string | CanvasGradient | CanvasPattern,
+    lineCap: CanvasLineCap,
+    lineJoin: CanvasLineJoin,
+    lineWidth: number
+}
+
+export interface MaybeStrokeStyle {
+    strokeStyle?: string | CanvasGradient | CanvasPattern,
+    lineCap?: CanvasLineCap,
+    lineJoin?: CanvasLineJoin,
+    lineWidth?: number
+}
+
+export interface FillStyle {
+    fillStyle: string | CanvasGradient | CanvasPattern,
+}
+
 export type Corner = [HorizontalEgde, VericalEdge];
